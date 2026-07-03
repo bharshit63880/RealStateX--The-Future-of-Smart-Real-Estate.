@@ -1,4 +1,4 @@
-# RealEstateX 🏢🚀
+# RealEstateX 
 
 > **The Future of Smart Real Estate**
 > An enterprise-grade, cloud-native real estate platform vision for managing the complete property lifecycle with microservices, geo-spatial search, and AI-driven intelligence.
