@@ -1,0 +1,42 @@
+import dotenv from 'dotenv';
+
+import { ENVIRONMENTS } from '../shared/constants/environments.js';
+
+dotenv.config();
+
+const required = (key, fallback) => {
+  const value = process.env[key] ?? fallback;
+
+  if (value === undefined || value === '') {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+
+  return value;
+};
+
+const numberFromEnv = (key, fallback) => {
+  const rawValue = required(key, fallback);
+  const parsed = Number(rawValue);
+
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Environment variable ${key} must be a number`);
+  }
+
+  return parsed;
+};
+
+export const config = {
+  nodeEnv: required('NODE_ENV', ENVIRONMENTS.DEVELOPMENT),
+  isProduction: process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION,
+  port: numberFromEnv('PORT', '5000'),
+  apiVersion: required('API_VERSION', 'v1'),
+  clientUrl: required('CLIENT_URL', 'http://localhost:5173'),
+  mongoUri: required('MONGODB_URI'),
+  logLevel: required('LOG_LEVEL', 'info'),
+  requestBodyLimit: required('REQUEST_BODY_LIMIT', '1mb'),
+  cookieSecret: required('COOKIE_SECRET'),
+  rateLimit: {
+    windowMs: numberFromEnv('RATE_LIMIT_WINDOW_MS', '900000'),
+    max: numberFromEnv('RATE_LIMIT_MAX', '300'),
+  },
+};
