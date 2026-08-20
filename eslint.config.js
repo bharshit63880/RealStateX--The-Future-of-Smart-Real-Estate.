@@ -6,7 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default [
   {
-    ignores: ['node_modules/**', 'dist/**', 'build/**', '.next/**', 'coverage/**'],
+    ignores: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.next/**', '**/coverage/**'],
   },
   js.configs.recommended,
   {
@@ -21,6 +21,10 @@ export default [
     rules: {
       'no-console': 'error',
     },
+  },
+  {
+    files: ['client/vite.config.js'],
+    languageOptions: { globals: { ...globals.node } },
   },
   {
     files: ['client/**/*.{js,jsx}'],
@@ -50,6 +54,7 @@ export default [
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
+      'react/prop-types': 'off',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
