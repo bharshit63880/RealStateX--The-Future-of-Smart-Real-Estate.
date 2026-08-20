@@ -1,4 +1,36 @@
-*RealEstateX*
+# RealEstateX
+
+> A production-oriented modular MERN foundation for a smart real-estate operating system.
+
+## Implemented now
+
+- Cinematic, responsive public homepage using the supplied blueprint-to-house video as a reversible scroll sequence
+- Public exploration and property-detail routes
+- Filterable and paginated property API with clearly marked deterministic development seed data
+- Express security middleware, request IDs, structured logs, stable response envelopes, health checks, and MongoDB configuration
+- Architecture and implementation-status documentation in `docs/`
+
+Authentication, RBAC, Elasticsearch, payments, AI, private documents, and real-time communication remain planned; the UI does not claim they are live.
+
+## Run locally
+
+```bash
+npm install
+copy .env.example .env
+npm run dev:server
+npm run dev:client
+```
+
+Verification:
+
+```bash
+npm run lint
+npm run build
+```
+
+---
+
+*Original product vision follows.*
 
 The Future of Smart Real EstateAn enterprise-grade, cloud-native real estate platform vision for managing the complete property lifecycle with microservices, geo-spatial search, and AI-driven intelligence.
 

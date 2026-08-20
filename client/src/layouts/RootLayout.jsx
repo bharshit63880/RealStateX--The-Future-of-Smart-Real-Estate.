@@ -11,11 +11,14 @@ export function RootLayout() {
           {env.appName}
         </Link>
         <nav className="app-nav" aria-label="Primary navigation">
-          <Link to={ROUTES.HOME}>Home</Link>
-          <Link to={ROUTES.DASHBOARD}>Dashboard</Link>
+          <Link to={ROUTES.EXPLORE}>Explore</Link>
+          <Link to={`${ROUTES.EXPLORE}?view=map`}>Map</Link>
+          <Link to={`${ROUTES.EXPLORE}?type=project`}>Projects</Link>
+          <a href="#intelligence">Insights</a>
+          <Link className="nav-emphasis" to={ROUTES.DASHBOARD}>List property</Link>
         </nav>
       </header>
-      <main className="app-main">
+      <main>
         <Outlet />
       </main>
     </div>
