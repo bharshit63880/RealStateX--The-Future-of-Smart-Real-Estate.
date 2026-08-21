@@ -1,6 +1,11 @@
 import { HTTP_STATUS } from '../../shared/constants/http-status.js';
 import { successResponse } from '../../shared/utils/response.js';
-import { getPropertyBySlug, searchProperties } from './property.service.js';
-
-export const listProperties = (request, response) => { const result = searchProperties(request.query); response.status(HTTP_STATUS.OK).json(successResponse({ message: 'Properties retrieved', data: result.items, meta: result.meta, requestId: request.id })); };
-export const showProperty = (request, response) => response.status(HTTP_STATUS.OK).json(successResponse({ message: 'Property retrieved', data: getPropertyBySlug(request.params.slug), requestId: request.id }));
+import * as service from './property.service.js';
+const send=(request,response,message,data,status=HTTP_STATUS.OK,meta=null)=>response.status(status).json(successResponse({message,data,meta,requestId:request.id}));
+export const listProperties=async(request,response)=>{const result=await service.searchProperties(request.query);return send(request,response,'Properties retrieved',result.items,HTTP_STATUS.OK,result.meta);};
+export const showProperty=async(request,response)=>send(request,response,'Property retrieved',await service.getPropertyBySlug(request.params.slug));
+export const createProperty=async(request,response)=>send(request,response,'Draft property created',await service.createProperty(request.validated.body,request.auth),HTTP_STATUS.CREATED);
+export const updateProperty=async(request,response)=>send(request,response,'Property updated',await service.updateOwnProperty(request.validated.params.id,request.validated.body,request.auth));
+export const favourite=async(request,response)=>send(request,response,'Favourite updated',await service.toggleFavourite(request.params.id,request.auth.sub));
+export const inquire=async(request,response)=>send(request,response,'Inquiry created',await service.createInquiry(request.validated.params.id,request.validated.body.message,request.auth.sub),HTTP_STATUS.CREATED);
+export const mine=async(request,response)=>send(request,response,'Your properties retrieved',await service.listOwnProperties(request.auth.sub));

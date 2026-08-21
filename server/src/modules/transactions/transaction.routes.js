@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { PERMISSIONS } from '../../shared/constants/roles.js';
+import { authenticate } from '../../shared/middleware/authenticate.js';
+import { authorize } from '../../shared/middleware/authorize.js';
+import { validate } from '../../shared/middleware/validate.js';
+import { asyncHandler } from '../../shared/utils/async-handler.js';
+import * as controller from './transaction.controller.js';
+import { documentReviewSchema,documentSchema,offerActionSchema,offerSchema } from './transaction.schemas.js';
+const router=Router();router.use(authenticate);
+router.get('/offers',asyncHandler(controller.listOffers));router.post('/offers',authorize(PERMISSIONS.OFFER_CREATE),validate(offerSchema),asyncHandler(controller.createOffer));router.patch('/offers/:id',validate(offerActionSchema),asyncHandler(controller.actionOffer));
+router.get('/documents',asyncHandler(controller.listDocuments));router.post('/documents',validate(documentSchema),asyncHandler(controller.addDocument));router.patch('/documents/:id/review',authorize(PERMISSIONS.DOCUMENT_VERIFY),validate(documentReviewSchema),asyncHandler(controller.reviewDocument));
+export default router;

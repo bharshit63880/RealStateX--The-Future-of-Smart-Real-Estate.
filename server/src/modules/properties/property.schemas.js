@@ -1,0 +1,5 @@
+import { z } from 'zod';
+const coordinates=z.tuple([z.number().min(-180).max(180),z.number().min(-90).max(90)]);
+export const createPropertySchema=z.object({body:z.object({title:z.string().trim().min(5).max(160),description:z.string().trim().min(30).max(5000),listingType:z.enum(['buy','rent']),propertyType:z.string().min(2).max(80),price:z.number().nonnegative(),bedrooms:z.number().int().nonnegative().optional(),bathrooms:z.number().int().nonnegative().optional(),carpetArea:z.number().positive().optional(),city:z.string().min(2).max(100),locality:z.string().min(2).max(120),state:z.string().min(2).max(100),postalCode:z.string().max(12).optional(),coordinates:coordinates.optional(),amenities:z.array(z.string().max(60)).max(50).default([])})});
+export const updatePropertySchema=z.object({body:createPropertySchema.shape.body.partial().refine((value)=>Object.keys(value).length>0,'At least one field is required'),params:z.object({id:z.string().regex(/^[a-f\d]{24}$/iu)})});
+export const inquirySchema=z.object({body:z.object({message:z.string().trim().min(10).max(1000)}),params:z.object({id:z.string().regex(/^[a-f\d]{24}$/iu)})});

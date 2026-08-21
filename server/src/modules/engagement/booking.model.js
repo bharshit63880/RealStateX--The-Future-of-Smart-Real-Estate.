@@ -1,0 +1,4 @@
+import mongoose from 'mongoose';
+const schema=new mongoose.Schema({propertyId:{type:mongoose.Schema.Types.ObjectId,ref:'Property',required:true,index:true},requesterId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},hostId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},scheduledFor:{type:Date,required:true,index:true},mode:{type:String,enum:['IN_PERSON','VIDEO'],default:'IN_PERSON'},note:{type:String,maxlength:1000},status:{type:String,enum:['REQUESTED','CONFIRMED','RESCHEDULED','COMPLETED','CANCELLED','NO_SHOW'],default:'REQUESTED',index:true},statusHistory:[{status:String,actorId:{type:mongoose.Schema.Types.ObjectId,ref:'User'},at:{type:Date,default:Date.now},reason:String}]},{timestamps:true,optimisticConcurrency:true});
+schema.index({hostId:1,scheduledFor:1,status:1}); schema.index({requesterId:1,scheduledFor:-1});
+export const Booking=mongoose.model('Booking',schema);

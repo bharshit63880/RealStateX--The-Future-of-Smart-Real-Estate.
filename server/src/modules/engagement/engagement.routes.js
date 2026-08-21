@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { authenticate } from '../../shared/middleware/authenticate.js';
+import { validate } from '../../shared/middleware/validate.js';
+import { asyncHandler } from '../../shared/utils/async-handler.js';
+import * as controller from './engagement.controller.js';
+import { bookingSchema,bookingStatusSchema,conversationSchema,messageSchema } from './engagement.schemas.js';
+const router=Router(); router.use(authenticate);
+router.get('/bookings',asyncHandler(controller.listBookings)); router.post('/bookings',validate(bookingSchema),asyncHandler(controller.createBooking)); router.patch('/bookings/:id',validate(bookingStatusSchema),asyncHandler(controller.updateBooking));
+router.get('/conversations',asyncHandler(controller.listConversations)); router.post('/conversations',validate(conversationSchema),asyncHandler(controller.createConversation)); router.post('/conversations/:id/messages',validate(messageSchema),asyncHandler(controller.addMessage));
+router.get('/notifications',asyncHandler(controller.notifications)); router.patch('/notifications/:id/read',asyncHandler(controller.readNotification));
+export default router;

@@ -7,16 +7,9 @@ export function RootLayout() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <Link className="brand-link" to={ROUTES.HOME}>
-          {env.appName}
-        </Link>
-        <nav className="app-nav" aria-label="Primary navigation">
-          <Link to={ROUTES.EXPLORE}>Explore</Link>
-          <Link to={`${ROUTES.EXPLORE}?view=map`}>Map</Link>
-          <Link to={`${ROUTES.EXPLORE}?type=project`}>Projects</Link>
-          <a href="#intelligence">Insights</a>
-          <Link className="nav-emphasis" to={ROUTES.DASHBOARD}>List property</Link>
-        </nav>
+        <Link className="menu-trigger" to={ROUTES.EXPLORE}><i /><span>Explore</span></Link>
+        <Link className="brand-link" to={ROUTES.HOME} aria-label={`${env.appName} home`}>RX</Link>
+        <Link className="nav-emphasis" to={ROUTES.DASHBOARD}>Inquire <span>→</span></Link>
       </header>
       <main>
         <Outlet />

@@ -1,5 +1,8 @@
 import { env } from '@config/env.js';
 
+let accessToken = null;
+export const setApiAccessToken = (token) => { accessToken = token; };
+
 export class ApiClientError extends Error {
   constructor(message, options = {}) {
     super(message);
@@ -10,13 +13,15 @@ export class ApiClientError extends Error {
 }
 
 export const apiClient = async (path, options = {}) => {
+  const { headers: optionHeaders, ...requestOptions } = options;
   const response = await fetch(`${env.apiBaseUrl}${path}`, {
+    ...requestOptions,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...optionHeaders,
     },
-    ...options,
   });
 
   const payload = await response.json().catch(() => null);
