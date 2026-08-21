@@ -15,4 +15,7 @@ export const ROUTES = Object.freeze({
   LEADS: '/dashboard/leads',
   LEASES: '/dashboard/leases',
   MAINTENANCE: '/dashboard/maintenance',
+  LISTINGS: '/dashboard/listings',
+  MODERATION: '/dashboard/moderation',
+  USERS: '/dashboard/users',
 });

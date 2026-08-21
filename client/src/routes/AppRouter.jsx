@@ -33,6 +33,9 @@ export function AppRouter() {
             <Route path={ROUTES.LEADS} element={<WorkspacePage moduleKey="leads" />} />
             <Route path={ROUTES.LEASES} element={<WorkspacePage moduleKey="leases" />} />
             <Route path={ROUTES.MAINTENANCE} element={<WorkspacePage moduleKey="maintenance" />} />
+            <Route path={ROUTES.LISTINGS} element={<WorkspacePage moduleKey="listings" />} />
+            <Route path={ROUTES.MODERATION} element={<WorkspacePage moduleKey="moderation" />} />
+            <Route path={ROUTES.USERS} element={<WorkspacePage moduleKey="users" />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Route>
