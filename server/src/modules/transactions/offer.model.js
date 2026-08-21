@@ -1,0 +1,4 @@
+import mongoose from 'mongoose';
+const schema=new mongoose.Schema({propertyId:{type:mongoose.Schema.Types.ObjectId,ref:'Property',required:true,index:true},buyerId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},sellerId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},amount:{type:Number,required:true,min:0},currency:{type:String,default:'INR'},conditions:[{type:String,maxlength:500}],expiresAt:{type:Date,required:true,index:true},status:{type:String,enum:['PENDING','COUNTERED','ACCEPTED','REJECTED','WITHDRAWN','EXPIRED'],default:'PENDING',index:true},parentOfferId:{type:mongoose.Schema.Types.ObjectId,ref:'Offer'},history:[{status:String,amount:Number,actorId:{type:mongoose.Schema.Types.ObjectId,ref:'User'},at:{type:Date,default:Date.now},note:String}]},{timestamps:true,optimisticConcurrency:true});
+schema.index({propertyId:1,status:1,createdAt:-1});
+export const Offer=mongoose.model('Offer',schema);

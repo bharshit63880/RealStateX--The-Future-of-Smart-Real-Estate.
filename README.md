@@ -1,21 +1,22 @@
 # RealEstateX
 
-> A production-oriented modular MERN foundation for a smart real-estate operating system.
+> A production-oriented multi-role real-estate operating system with a cinematic property experience.
 
 ## Implemented now
 
 - Cinematic, responsive public homepage using the supplied blueprint-to-house video as a reversible scroll sequence
-- Public exploration and property-detail routes
-- Filterable and paginated property API with clearly marked deterministic development seed data
-- Express security middleware, request IDs, structured logs, stable response envelopes, health checks, and MongoDB configuration
-- Architecture and implementation-status documentation in `docs/`
+- Secure authentication, rotating refresh sessions and RBAC for eight roles
+- Property drafts, moderation, publishing, search, favourites and inquiries
+- Visits, conversations, notifications, offers and document verification
+- Builder inventory, lead CRM, leases, maintenance, admin analytics and audit logs
+- Container deployment, CI quality gates and production runbook
 
-Authentication, RBAC, Elasticsearch, payments, AI, private documents, and real-time communication remain planned; the UI does not claim they are live.
+Binary document storage, payment rails and external AI providers require deployment-specific services; the repository exposes the application workflows and adapters needed to integrate them.
 
 ## Run locally
 
 ```bash
-npm install
+npm ci
 copy .env.example .env
 npm run dev:server
 npm run dev:client
@@ -25,8 +26,11 @@ Verification:
 
 ```bash
 npm run lint
+npm test
 npm run build
 ```
+
+See [`docs/PRODUCTION.md`](docs/PRODUCTION.md) for container deployment, secrets and release guidance and [`docs/API.md`](docs/API.md) for the endpoint catalogue.
 
 ---
 

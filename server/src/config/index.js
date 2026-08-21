@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import path from 'node:path';
 
 import { ENVIRONMENTS } from '../shared/constants/environments.js';
 
@@ -32,9 +33,30 @@ export const config = {
   apiVersion: required('API_VERSION', 'v1'),
   clientUrl: required('CLIENT_URL', 'http://localhost:5173'),
   mongoUri: required('MONGODB_URI'),
+  mongoDatabase: required('MONGODB_DATABASE', 'realstatex'),
+  mongoFallbackHosts: process.env.MONGODB_FALLBACK_HOSTS || '',
+  mongoReplicaSet: process.env.MONGODB_REPLICA_SET || '',
+  databaseRequired:
+    required(
+      'DATABASE_REQUIRED',
+      process.env.NODE_ENV === ENVIRONMENTS.PRODUCTION ? 'true' : 'false',
+    ) === 'true',
   logLevel: required('LOG_LEVEL', 'info'),
   requestBodyLimit: required('REQUEST_BODY_LIMIT', '1mb'),
+  documentStoragePath: path.resolve(required('DOCUMENT_STORAGE_PATH', 'storage/documents')),
   cookieSecret: required('COOKIE_SECRET'),
+  jwt: {
+    accessSecret: required('JWT_ACCESS_SECRET'),
+    refreshSecret: required('JWT_REFRESH_SECRET'),
+    accessExpiresIn: required('JWT_ACCESS_EXPIRES_IN', '15m'),
+    refreshExpiresInDays: numberFromEnv('JWT_REFRESH_EXPIRES_IN_DAYS', '30'),
+  },
+  auth: {
+    maxFailedLogins: numberFromEnv('AUTH_MAX_FAILED_LOGINS', '5'),
+    lockMinutes: numberFromEnv('AUTH_LOCK_MINUTES', '15'),
+    rateLimitWindowMs: numberFromEnv('AUTH_RATE_LIMIT_WINDOW_MS', '900000'),
+    rateLimitMax: numberFromEnv('AUTH_RATE_LIMIT_MAX', '20'),
+  },
   rateLimit: {
     windowMs: numberFromEnv('RATE_LIMIT_WINDOW_MS', '900000'),
     max: numberFromEnv('RATE_LIMIT_MAX', '300'),

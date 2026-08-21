@@ -1,5 +1,8 @@
 import { env } from '@config/env.js';
 
+let accessToken = null;
+export const setApiAccessToken = (token) => { accessToken = token; };
+
 export class ApiClientError extends Error {
   constructor(message, options = {}) {
     super(message);
@@ -10,15 +13,19 @@ export class ApiClientError extends Error {
 }
 
 export const apiClient = async (path, options = {}) => {
+  const { headers: optionHeaders, responseType, ...requestOptions } = options;
+  const isFormData = options.body instanceof FormData;
   const response = await fetch(`${env.apiBaseUrl}${path}`, {
+    ...requestOptions,
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...optionHeaders,
     },
-    ...options,
   });
 
+  if(response.ok&&responseType==='blob')return response.blob();
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {

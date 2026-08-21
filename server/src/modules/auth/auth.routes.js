@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { config } from '../../config/index.js';
+import { asyncHandler } from '../../shared/utils/async-handler.js';
+import { validate } from '../../shared/middleware/validate.js';
+import { authenticate } from '../../shared/middleware/authenticate.js';
+import { changePasswordSchema, registerSchema, loginSchema } from './auth.schemas.js';
+import * as controller from './auth.controller.js';
+const router=Router();
+const credentialLimiter=rateLimit({windowMs:config.auth.rateLimitWindowMs,limit:config.auth.rateLimitMax,standardHeaders:true,legacyHeaders:false,skipSuccessfulRequests:true,message:{success:false,message:'Too many authentication attempts. Try again later.'}});
+router.post('/register',credentialLimiter,validate(registerSchema),asyncHandler(controller.register));
+router.post('/login',credentialLimiter,validate(loginSchema),asyncHandler(controller.login));
+router.post('/refresh',asyncHandler(controller.refresh));
+router.post('/logout',asyncHandler(controller.logout));
+router.get('/me',authenticate,asyncHandler(controller.me));
+router.patch('/password',authenticate,validate(changePasswordSchema),asyncHandler(controller.changePassword));
+router.post('/logout-all',authenticate,asyncHandler(controller.logoutAll));
+export default router;

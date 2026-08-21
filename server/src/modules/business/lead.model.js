@@ -1,0 +1,4 @@
+import mongoose from 'mongoose';
+const schema=new mongoose.Schema({ownerId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},propertyId:{type:mongoose.Schema.Types.ObjectId,ref:'Property',index:true},name:{type:String,required:true,maxlength:120},email:{type:String,lowercase:true,trim:true},phone:{type:String,maxlength:30},source:{type:String,enum:['INQUIRY','REFERRAL','CAMPAIGN','WALK_IN','OTHER'],default:'OTHER',index:true},stage:{type:String,enum:['NEW','CONTACTED','QUALIFIED','VISIT','NEGOTIATION','WON','LOST'],default:'NEW',index:true},budget:Number,score:{type:Number,min:0,max:100,default:0},notes:[{body:{type:String,maxlength:1000},actorId:{type:mongoose.Schema.Types.ObjectId,ref:'User'},createdAt:{type:Date,default:Date.now}}],nextFollowUpAt:{type:Date,index:true}},{timestamps:true,optimisticConcurrency:true});
+schema.index({ownerId:1,stage:1,nextFollowUpAt:1});
+export const Lead=mongoose.model('Lead',schema);

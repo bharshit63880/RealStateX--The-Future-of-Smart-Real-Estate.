@@ -1,27 +1,21 @@
+import mongoose from 'mongoose';
+import { ForbiddenError } from '../../shared/errors/forbidden-error.js';
 import { NotFoundError } from '../../shared/errors/not-found-error.js';
 import { demoProperties } from './property.data.js';
-
-const includes = (value, query) => value.toLocaleLowerCase().includes(query.toLocaleLowerCase());
-
-export const searchProperties = (filters = {}) => {
-  const page = Math.max(1, Number(filters.page) || 1);
-  const limit = Math.min(24, Math.max(1, Number(filters.limit) || 12));
-  const results = demoProperties.filter((property) => {
-    if (filters.q && ![property.title, property.city, property.locality].some((value) => includes(value, filters.q))) return false;
-    if (filters.city && !includes(property.city, filters.city)) return false;
-    if (filters.listingType && property.listingType !== filters.listingType) return false;
-    if (filters.propertyType && property.propertyType !== filters.propertyType) return false;
-    if (filters.bedrooms && property.bedrooms !== Number(filters.bedrooms)) return false;
-    if (filters.maxPrice && property.price > Number(filters.maxPrice)) return false;
-    if (filters.verified === 'true' && !property.verified) return false;
-    return true;
-  });
-  const start = (page - 1) * limit;
-  return { items: results.slice(start, start + limit), meta: { page, limit, total: results.length, pages: Math.ceil(results.length / limit), source: 'DEMO_SEED' } };
-};
-
-export const getPropertyBySlug = (slug) => {
-  const property = demoProperties.find((item) => item.slug === slug);
-  if (!property) throw new NotFoundError('Property not found');
-  return property;
-};
+import { Property } from './property.model.js';
+import { Favourite } from './favourite.model.js';
+import { Inquiry } from './inquiry.model.js';
+import { User } from '../auth/user.model.js';
+const includes=(value,query)=>value.toLocaleLowerCase().includes(query.toLocaleLowerCase());
+const slugify=(value)=>`${value.toLowerCase().trim().replace(/[^a-z0-9]+/gu,'-').replace(/(^-|-$)/gu,'')}-${Date.now().toString(36)}`;
+const escape=(value)=>value.replace(/[.*+?^${}()|[\]\\]/gu,'\\$&');
+const publicFilter=(filters)=>{const query={status:'PUBLISHED',deletedAt:null};if(filters.q){const term=new RegExp(escape(filters.q.slice(0,100)),'iu');query.$or=[{title:term},{city:term},{locality:term}];}if(filters.city)query.city=new RegExp(escape(filters.city.slice(0,100)),'iu');if(filters.listingType)query.listingType=filters.listingType;if(filters.propertyType)query.propertyType=filters.propertyType;if(filters.bedrooms)query.bedrooms=Number(filters.bedrooms);if(filters.maxPrice)query.price={$lte:Number(filters.maxPrice)};if(filters.verified==='true')query.verified=true;return query;};
+export const searchProperties=async(filters={})=>{const page=Math.max(1,Number(filters.page)||1);const limit=Math.min(24,Math.max(1,Number(filters.limit)||12));if(mongoose.connection.readyState===1){const query=publicFilter(filters);const [items,total]=await Promise.all([Property.find(query).sort({publishedAt:-1,createdAt:-1}).skip((page-1)*limit).limit(limit).lean(),Property.countDocuments(query)]);if(total)return{items,meta:{page,limit,total,pages:Math.ceil(total/limit),source:'MONGODB'}};}const results=demoProperties.filter((property)=>{if(filters.q&&![property.title,property.city,property.locality].some((value)=>includes(value,filters.q)))return false;if(filters.city&&!includes(property.city,filters.city))return false;if(filters.listingType&&property.listingType!==filters.listingType)return false;if(filters.propertyType&&property.propertyType!==filters.propertyType)return false;if(filters.bedrooms&&property.bedrooms!==Number(filters.bedrooms))return false;if(filters.maxPrice&&property.price>Number(filters.maxPrice))return false;if(filters.verified==='true'&&!property.verified)return false;return true;});return{items:results.slice((page-1)*limit,page*limit),meta:{page,limit,total:results.length,pages:Math.ceil(results.length/limit),source:'DEMO_SEED'}};};
+export const getPropertyBySlug=async(slug)=>{if(mongoose.connection.readyState===1){const property=await Property.findOne({slug,status:'PUBLISHED',deletedAt:null}).lean();if(property)return property;}const property=demoProperties.find((item)=>item.slug===slug);if(!property)throw new NotFoundError('Property not found');return property;};
+export const createProperty=async(input,actor)=>Property.create({...input,slug:slugify(input.title),ownerId:actor.sub,location:input.coordinates?{type:'Point',coordinates:input.coordinates}:undefined,statusHistory:[{status:'DRAFT',actorId:actor.sub}]});
+export const updateOwnProperty=async(id,input,actor)=>{const property=await Property.findById(id);if(!property)throw new NotFoundError('Property not found');if(property.ownerId.toString()!==actor.sub&&!['ADMIN','SUPER_ADMIN'].includes(actor.role))throw new ForbiddenError();if(!['DRAFT','CHANGES_REQUESTED'].includes(property.status)&&!['ADMIN','SUPER_ADMIN'].includes(actor.role))throw new ForbiddenError('Only draft listings can be edited');Object.assign(property,input);if(input.coordinates)property.location={type:'Point',coordinates:input.coordinates};await property.save();return property;};
+export const toggleFavourite=async(propertyId,userId)=>{const existing=await Favourite.findOne({propertyId,userId});if(existing){await existing.deleteOne();return{saved:false};}await Favourite.create({propertyId,userId});return{saved:true};};
+export const createInquiry=async(propertyId,message,buyerId)=>{const property=await Property.findOne({_id:propertyId,status:'PUBLISHED',deletedAt:null});if(!property)throw new NotFoundError('Property not found');return Inquiry.create({propertyId,buyerId,ownerId:property.ownerId,message});};
+export const listOwnProperties=(userId)=>Property.find({ownerId:userId,deletedAt:null}).sort({updatedAt:-1}).lean();
+export const listManagedProperties=(userId)=>Property.find({managerIds:userId,deletedAt:null}).sort({updatedAt:-1}).lean();
+export const updateManager=async(propertyId,{userId,action},actor)=>{const property=await Property.findById(propertyId);if(!property)throw new NotFoundError('Property not found');if(property.ownerId.toString()!==actor.sub&&!['ADMIN','SUPER_ADMIN'].includes(actor.role))throw new ForbiddenError();const manager=await User.findOne({_id:userId,role:'PROPERTY_MANAGER',status:'ACTIVE'});if(!manager)throw new NotFoundError('Active property manager not found');if(action==='ASSIGN'&&!property.managerIds.some(id=>id.toString()===userId))property.managerIds.push(userId);if(action==='REMOVE')property.managerIds=property.managerIds.filter(id=>id.toString()!==userId);await property.save();return property;};
