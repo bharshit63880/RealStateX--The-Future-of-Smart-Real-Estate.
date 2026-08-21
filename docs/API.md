@@ -36,6 +36,8 @@ Base URL: `/api/v1`. JSON responses use `{ success, message, data, error, meta, 
 | PATCH | `/conversations/:id/read` | Mark messages read |
 | GET | `/notifications` | Activity inbox |
 | PATCH | `/notifications/:id/read` | Mark notification read |
+
+Booking updates enforce a server-side lifecycle (`REQUESTED` → `CONFIRMED`/`RESCHEDULED`/`CANCELLED`, then completion or no-show from an active visit). Requesters may only reschedule or cancel; hosts control confirmation and closure.
 | GET/POST | `/offers` | List/create offers |
 | PATCH | `/offers/:id` | Accept/reject/counter/withdraw |
 | GET/POST | `/documents` | List/upload private PDF/image documents |
