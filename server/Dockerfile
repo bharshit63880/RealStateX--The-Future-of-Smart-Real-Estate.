@@ -11,6 +11,7 @@ RUN addgroup -S realstatex && adduser -S realstatex -G realstatex
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./package.json
 COPY server ./server
+RUN mkdir -p /app/server/storage/documents && chown -R realstatex:realstatex /app/server/storage
 USER realstatex
 EXPOSE 5000
 CMD ["node","server/src/server.js"]

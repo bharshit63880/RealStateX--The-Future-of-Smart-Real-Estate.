@@ -40,4 +40,6 @@ Thumbs.db
 
 # Uploads/local storage
 uploads/
+storage/
+server/storage/
 tmp/

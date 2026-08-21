@@ -10,6 +10,7 @@ const propertySchema = new mongoose.Schema({
   location:{type:{type:String,enum:['Point'],default:'Point'},coordinates:{type:[Number],validate:{validator:(value)=>value.length===2,message:'Coordinates require longitude and latitude'}}},
   amenities:[{type:String}], media:[{url:String,type:{type:String,enum:['image','video','floor-plan','360']},alt:String,isCover:Boolean}],
   ownerId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true}, status:{type:String,enum:PROPERTY_STATUSES,default:'DRAFT',index:true},
+  managerIds:[{type:mongoose.Schema.Types.ObjectId,ref:'User',index:true}],
   verified:{type:Boolean,default:false,index:true}, statusHistory:[{status:{type:String,enum:PROPERTY_STATUSES},at:{type:Date,default:Date.now},actorId:{type:mongoose.Schema.Types.ObjectId,ref:'User'},reason:String}],
   publishedAt:{type:Date,default:null}, deletedAt:{type:Date,default:null,index:true},
 },{timestamps:true,optimisticConcurrency:true});

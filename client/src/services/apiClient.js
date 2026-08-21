@@ -13,17 +13,19 @@ export class ApiClientError extends Error {
 }
 
 export const apiClient = async (path, options = {}) => {
-  const { headers: optionHeaders, ...requestOptions } = options;
+  const { headers: optionHeaders, responseType, ...requestOptions } = options;
+  const isFormData = options.body instanceof FormData;
   const response = await fetch(`${env.apiBaseUrl}${path}`, {
     ...requestOptions,
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...optionHeaders,
     },
   });
 
+  if(response.ok&&responseType==='blob')return response.blob();
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {

@@ -38,7 +38,8 @@ Base URL: `/api/v1`. JSON responses use `{ success, message, data, error, meta, 
 | PATCH | `/notifications/:id/read` | Mark notification read |
 | GET/POST | `/offers` | List/create offers |
 | PATCH | `/offers/:id` | Accept/reject/counter/withdraw |
-| GET/POST | `/documents` | List/register document metadata |
+| GET/POST | `/documents` | List/upload private PDF/image documents |
+| GET | `/documents/:id/download` | Authorized audited download |
 | PATCH | `/documents/:id/review` | Moderator verification |
 
 ## Business operations

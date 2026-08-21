@@ -17,6 +17,8 @@ services:
       DATABASE_REQUIRED: "true"
       MONGODB_URI: mongodb://mongo:27017/realstatex
       CLIENT_URL: http://localhost:8080
+      DOCUMENT_STORAGE_PATH: /app/server/storage/documents
+    volumes: [realstatex_documents:/app/server/storage/documents]
     depends_on:
       mongo: { condition: service_healthy }
     healthcheck:
@@ -32,3 +34,4 @@ services:
       api: { condition: service_healthy }
 volumes:
   realstatex_mongo:
+  realstatex_documents:

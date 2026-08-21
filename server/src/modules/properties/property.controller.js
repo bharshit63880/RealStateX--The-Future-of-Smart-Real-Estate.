@@ -9,3 +9,5 @@ export const updateProperty=async(request,response)=>send(request,response,'Prop
 export const favourite=async(request,response)=>send(request,response,'Favourite updated',await service.toggleFavourite(request.params.id,request.auth.sub));
 export const inquire=async(request,response)=>send(request,response,'Inquiry created',await service.createInquiry(request.validated.params.id,request.validated.body.message,request.auth.sub),HTTP_STATUS.CREATED);
 export const mine=async(request,response)=>send(request,response,'Your properties retrieved',await service.listOwnProperties(request.auth.sub));
+export const managed=async(request,response)=>send(request,response,'Managed properties retrieved',await service.listManagedProperties(request.auth.sub));
+export const manager=async(request,response)=>send(request,response,'Property manager assignment updated',await service.updateManager(request.validated.params.id,request.validated.body,request.auth));

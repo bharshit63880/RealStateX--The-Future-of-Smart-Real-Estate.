@@ -2,6 +2,7 @@ import { config } from '../../config/index.js';
 import { HTTP_STATUS } from '../constants/http-status.js';
 import { logger } from '../logger/index.js';
 import { errorResponse } from '../utils/response.js';
+import fs from 'node:fs';
 
 export const errorHandler = (error, request, response, next) => {
   if (response.headersSent) {
@@ -9,11 +10,13 @@ export const errorHandler = (error, request, response, next) => {
     return;
   }
 
+  if(request.file?.path)fs.promises.unlink(request.file.path).catch(()=>{});
   const duplicate = error?.code === 11000;
   const invalidIdentifier = error?.name === 'CastError';
-  const statusCode = duplicate ? HTTP_STATUS.CONFLICT : invalidIdentifier ? HTTP_STATUS.BAD_REQUEST : error.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
-  const isOperational = error.isOperational === true || duplicate || invalidIdentifier;
-  const message = duplicate ? 'A record with these details already exists' : invalidIdentifier ? 'Invalid resource identifier' : isOperational ? error.message : 'Internal server error';
+  const uploadError = error?.name === 'MulterError';
+  const statusCode = duplicate ? HTTP_STATUS.CONFLICT : invalidIdentifier||uploadError ? HTTP_STATUS.BAD_REQUEST : error.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
+  const isOperational = error.isOperational === true || duplicate || invalidIdentifier || uploadError;
+  const message = duplicate ? 'A record with these details already exists' : invalidIdentifier ? 'Invalid resource identifier' : uploadError ? 'Invalid document upload' : isOperational ? error.message : 'Internal server error';
 
   logger.error(
     {
@@ -28,7 +31,7 @@ export const errorHandler = (error, request, response, next) => {
   response.status(statusCode).json(
     errorResponse({
       message,
-      code: duplicate ? 'CONFLICT' : invalidIdentifier ? 'BAD_REQUEST' : error.code || 'INTERNAL_ERROR',
+      code: duplicate ? 'CONFLICT' : invalidIdentifier||uploadError ? 'BAD_REQUEST' : error.code || 'INTERNAL_ERROR',
       details: isOperational ? error.details : null,
       requestId: request.id,
       stack: config.isProduction ? undefined : error.stack,

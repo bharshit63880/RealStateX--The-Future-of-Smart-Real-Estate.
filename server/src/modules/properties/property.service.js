@@ -5,6 +5,7 @@ import { demoProperties } from './property.data.js';
 import { Property } from './property.model.js';
 import { Favourite } from './favourite.model.js';
 import { Inquiry } from './inquiry.model.js';
+import { User } from '../auth/user.model.js';
 const includes=(value,query)=>value.toLocaleLowerCase().includes(query.toLocaleLowerCase());
 const slugify=(value)=>`${value.toLowerCase().trim().replace(/[^a-z0-9]+/gu,'-').replace(/(^-|-$)/gu,'')}-${Date.now().toString(36)}`;
 const escape=(value)=>value.replace(/[.*+?^${}()|[\]\\]/gu,'\\$&');
@@ -16,3 +17,5 @@ export const updateOwnProperty=async(id,input,actor)=>{const property=await Prop
 export const toggleFavourite=async(propertyId,userId)=>{const existing=await Favourite.findOne({propertyId,userId});if(existing){await existing.deleteOne();return{saved:false};}await Favourite.create({propertyId,userId});return{saved:true};};
 export const createInquiry=async(propertyId,message,buyerId)=>{const property=await Property.findOne({_id:propertyId,status:'PUBLISHED',deletedAt:null});if(!property)throw new NotFoundError('Property not found');return Inquiry.create({propertyId,buyerId,ownerId:property.ownerId,message});};
 export const listOwnProperties=(userId)=>Property.find({ownerId:userId,deletedAt:null}).sort({updatedAt:-1}).lean();
+export const listManagedProperties=(userId)=>Property.find({managerIds:userId,deletedAt:null}).sort({updatedAt:-1}).lean();
+export const updateManager=async(propertyId,{userId,action},actor)=>{const property=await Property.findById(propertyId);if(!property)throw new NotFoundError('Property not found');if(property.ownerId.toString()!==actor.sub&&!['ADMIN','SUPER_ADMIN'].includes(actor.role))throw new ForbiddenError();const manager=await User.findOne({_id:userId,role:'PROPERTY_MANAGER',status:'ACTIVE'});if(!manager)throw new NotFoundError('Active property manager not found');if(action==='ASSIGN'&&!property.managerIds.some(id=>id.toString()===userId))property.managerIds.push(userId);if(action==='REMOVE')property.managerIds=property.managerIds.filter(id=>id.toString()!==userId);await property.save();return property;};

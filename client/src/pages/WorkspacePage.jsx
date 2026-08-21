@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { apiClient } from '@services/apiClient.js';
 import { ROUTES } from '@config/routes.js';
 import { ModuleCreateForm } from '../components/workspace/ModuleCreateForm.jsx';
+import { ModuleItemActions } from '../components/workspace/ModuleItemActions.jsx';
 
 const MODULES={
   bookings:{title:'Visit calendar',intro:'Every property visit, confirmation and reschedule in one timeline.',endpoint:'/bookings'},
@@ -29,6 +30,6 @@ export function WorkspacePage({ moduleKey }) {
     <ModuleCreateForm moduleKey={moduleKey} onCreated={()=>setRefresh(value=>value+1)} />{error&&<p className="workspace-error" role="alert">{error}</p>}
     {data===null&&!error&&<p className="workspace-empty">Loading live workspace…</p>}
     {moduleKey==='admin'&&data&&<section className="workspace-admin">{Object.entries(data).filter(([,entry])=>typeof entry!=='object').map(([key,entry])=><article key={key}><small>{key.replaceAll(/([A-Z])/g,' $1')}</small><strong>{typeof entry==='number'?entry.toLocaleString('en-IN'):entry}</strong></article>)}</section>}
-    {data!==null&&moduleKey!=='admin'&&<section className="workspace-list">{items.length?items.map((item,index)=><article key={item._id||index}><span>{String(index+1).padStart(2,'0')}</span><div><h2>{item.title||item.status||module.title}</h2><p>{value(item,moduleKey)}</p></div><small>{item.status||(item.readAt?'Read':'Active')}</small></article>):<p className="workspace-empty">No activity yet. New records will appear here automatically.</p>}</section>}
+    {data!==null&&moduleKey!=='admin'&&<section className="workspace-list">{items.length?items.map((item,index)=><article key={item._id||index}><span>{String(index+1).padStart(2,'0')}</span><div><h2>{item.title||item.name||item.status||module.title}</h2><p>{value(item,moduleKey)}</p><ModuleItemActions moduleKey={moduleKey} item={item} onChanged={()=>setRefresh(value=>value+1)}/></div><small>{item.status||(item.readAt?'Read':'Active')}</small></article>):<p className="workspace-empty">No activity yet. New records will appear here automatically.</p>}</section>}
   </main>;
 }

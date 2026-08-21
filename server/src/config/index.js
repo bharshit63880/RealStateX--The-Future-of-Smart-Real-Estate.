@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import path from 'node:path';
 
 import { ENVIRONMENTS } from '../shared/constants/environments.js';
 
@@ -42,6 +43,7 @@ export const config = {
     ) === 'true',
   logLevel: required('LOG_LEVEL', 'info'),
   requestBodyLimit: required('REQUEST_BODY_LIMIT', '1mb'),
+  documentStoragePath: path.resolve(required('DOCUMENT_STORAGE_PATH', 'storage/documents')),
   cookieSecret: required('COOKIE_SECRET'),
   jwt: {
     accessSecret: required('JWT_ACCESS_SECRET'),
