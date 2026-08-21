@@ -9,3 +9,12 @@ export const getHealth = () => ({
     name: mongoose.connection.name || null,
   },
 });
+
+export const getReadiness = (readyState = mongoose.connection.readyState) => {
+  const connected = readyState === 1;
+  return {
+    status: connected ? 'ready' : 'not_ready',
+    timestamp: new Date().toISOString(),
+    checks: { database: connected ? 'up' : 'down' },
+  };
+};

@@ -54,6 +54,8 @@ export const config = {
   auth: {
     maxFailedLogins: numberFromEnv('AUTH_MAX_FAILED_LOGINS', '5'),
     lockMinutes: numberFromEnv('AUTH_LOCK_MINUTES', '15'),
+    rateLimitWindowMs: numberFromEnv('AUTH_RATE_LIMIT_WINDOW_MS', '900000'),
+    rateLimitMax: numberFromEnv('AUTH_RATE_LIMIT_MAX', '20'),
   },
   rateLimit: {
     windowMs: numberFromEnv('RATE_LIMIT_WINDOW_MS', '900000'),

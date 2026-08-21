@@ -2,6 +2,13 @@
 
 Base URL: `/api/v1`. JSON responses use `{ success, message, data, error, meta, requestId }`. Protected routes require `Authorization: Bearer <access-token>`; refresh tokens are signed HttpOnly cookies.
 
+## Operations
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/health`, `/health/live` | Process liveness and database state |
+| GET | `/health/ready` | Dependency readiness; returns 503 while MongoDB is unavailable |
+
 ## Identity
 
 | Method | Path | Purpose |

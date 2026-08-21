@@ -6,7 +6,7 @@
 - MongoDB 8 replica set/Atlas with backups, point-in-time recovery and TLS
 - HTTPS reverse proxy and a dedicated application domain
 - Encrypted persistent storage mounted at `DOCUMENT_STORAGE_PATH` (or a private object-storage adapter)
-- Central log/metric drain and uptime alerts for `/api/v1/health`
+- Central log/metric drain and uptime alerts for `/api/v1/health/live`; route traffic only when `/api/v1/health/ready` returns 200.
 
 ## Secrets
 
@@ -25,5 +25,5 @@ Copy `.env.example` to `.env`, replace every secret and run `docker compose up -
 - Refresh tokens are hashed and rotated; reuse revokes the entire token family.
 - Access tokens are short-lived and held in browser memory.
 - Admin, moderation and transaction mutations emit audit records.
-- Rate limits, Helmet, strict CORS, signed HttpOnly cookies and body limits are enabled.
+- Global and stricter authentication rate limits, Helmet, strict CORS, signed HttpOnly cookies and body limits are enabled.
 - Document uploads enforce authentication, ownership/manager scope, 25 MB limits, allowed MIME/signature checks, SHA-256 checksums and audited downloads. Back `DOCUMENT_STORAGE_PATH` with encrypted persistent storage and malware scanning in production.
