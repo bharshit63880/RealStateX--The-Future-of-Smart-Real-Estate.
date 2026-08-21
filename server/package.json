@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "admin:create": "node src/scripts/create-admin.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

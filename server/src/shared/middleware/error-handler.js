@@ -9,9 +9,11 @@ export const errorHandler = (error, request, response, next) => {
     return;
   }
 
-  const statusCode = error.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
-  const isOperational = error.isOperational === true;
-  const message = isOperational ? error.message : 'Internal server error';
+  const duplicate = error?.code === 11000;
+  const invalidIdentifier = error?.name === 'CastError';
+  const statusCode = duplicate ? HTTP_STATUS.CONFLICT : invalidIdentifier ? HTTP_STATUS.BAD_REQUEST : error.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
+  const isOperational = error.isOperational === true || duplicate || invalidIdentifier;
+  const message = duplicate ? 'A record with these details already exists' : invalidIdentifier ? 'Invalid resource identifier' : isOperational ? error.message : 'Internal server error';
 
   logger.error(
     {
@@ -26,7 +28,7 @@ export const errorHandler = (error, request, response, next) => {
   response.status(statusCode).json(
     errorResponse({
       message,
-      code: error.code || 'INTERNAL_ERROR',
+      code: duplicate ? 'CONFLICT' : invalidIdentifier ? 'BAD_REQUEST' : error.code || 'INTERNAL_ERROR',
       details: isOperational ? error.details : null,
       requestId: request.id,
       stack: config.isProduction ? undefined : error.stack,

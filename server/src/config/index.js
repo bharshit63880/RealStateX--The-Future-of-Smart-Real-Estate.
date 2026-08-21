@@ -49,6 +49,10 @@ export const config = {
     accessExpiresIn: required('JWT_ACCESS_EXPIRES_IN', '15m'),
     refreshExpiresInDays: numberFromEnv('JWT_REFRESH_EXPIRES_IN_DAYS', '30'),
   },
+  auth: {
+    maxFailedLogins: numberFromEnv('AUTH_MAX_FAILED_LOGINS', '5'),
+    lockMinutes: numberFromEnv('AUTH_LOCK_MINUTES', '15'),
+  },
   rateLimit: {
     windowMs: numberFromEnv('RATE_LIMIT_WINDOW_MS', '900000'),
     max: numberFromEnv('RATE_LIMIT_MAX', '300'),

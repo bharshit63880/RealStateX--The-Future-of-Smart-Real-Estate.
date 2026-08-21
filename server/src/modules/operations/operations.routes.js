@@ -7,6 +7,7 @@ import { asyncHandler } from '../../shared/utils/async-handler.js';
 import * as controller from './operations.controller.js';
 import { auditQuerySchema,listingReviewSchema,submitListingSchema,userGovernanceSchema } from './operations.schemas.js';
 const router=Router();router.use(authenticate);
+router.get('/dashboard/summary',asyncHandler(controller.dashboardSummary));
 router.post('/properties/:id/submit',authorize(PERMISSIONS.PROPERTY_EDIT_OWN),validate(submitListingSchema),asyncHandler(controller.submitListing));
 router.get('/moderation/listings',authorize(PERMISSIONS.MODERATION_REVIEW),asyncHandler(controller.reviewQueue));router.patch('/moderation/listings/:id',authorize(PERMISSIONS.PROPERTY_VERIFY),validate(listingReviewSchema),asyncHandler(controller.reviewListing));
 router.get('/admin/users',authorize(PERMISSIONS.USER_MANAGE),asyncHandler(controller.users));router.patch('/admin/users/:id',authorize(PERMISSIONS.USER_MANAGE),validate(userGovernanceSchema),asyncHandler(controller.governUser));

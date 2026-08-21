@@ -30,7 +30,7 @@ npm test
 npm run build
 ```
 
-See [`docs/PRODUCTION.md`](docs/PRODUCTION.md) for container deployment, secrets and release guidance.
+See [`docs/PRODUCTION.md`](docs/PRODUCTION.md) for container deployment, secrets and release guidance and [`docs/API.md`](docs/API.md) for the endpoint catalogue.
 
 ---
 

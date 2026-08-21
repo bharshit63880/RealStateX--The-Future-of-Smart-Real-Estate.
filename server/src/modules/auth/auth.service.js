@@ -8,6 +8,7 @@ import { Session } from './session.model.js';
 import { createAccessToken, createRefreshToken, hashToken, verifyRefreshToken } from './token.service.js';
 
 const expiry = () => new Date(Date.now() + config.jwt.refreshExpiresInDays * 86400000);
+const dummyPasswordHash = '$2b$12$qVkHFPYdYRsxNHE6ezBk1eVBhJmRcBvZqFQZ9t1vK1miGhpAAwdJm';
 const issue = async (user, context, familyId = crypto.randomUUID()) => {
   const accessToken = createAccessToken(user);
   const refreshToken = createRefreshToken(user.id, familyId);
@@ -21,7 +22,15 @@ export const register = async (input, context) => {
 };
 export const login = async (input, context) => {
   const user = await User.findOne({ email: input.email.toLowerCase() }).select('+passwordHash +failedLoginAttempts +lockedUntil');
-  if (!user || !(await bcrypt.compare(input.password, user.passwordHash))) throw new UnauthorizedError('Invalid email or password');
+  const validPassword = await bcrypt.compare(input.password, user?.passwordHash || dummyPasswordHash);
+  if (!user || !validPassword) {
+    if (user) {
+      user.failedLoginAttempts += 1;
+      if (user.failedLoginAttempts >= config.auth.maxFailedLogins) user.lockedUntil = new Date(Date.now() + config.auth.lockMinutes * 60000);
+      await user.save();
+    }
+    throw new UnauthorizedError('Invalid email or password');
+  }
   if (user.status !== 'ACTIVE' || (user.lockedUntil && user.lockedUntil > new Date())) throw new UnauthorizedError('Account is unavailable');
   user.failedLoginAttempts = 0; user.lockedUntil = null; user.lastLoginAt = new Date(); await user.save();
   return issue(user.toJSON(), context);
