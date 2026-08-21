@@ -43,6 +43,7 @@ Base URL: `/api/v1`. JSON responses use `{ success, message, data, error, meta, 
 | PATCH | `/conversations/:id/read` | Mark messages read |
 | GET | `/notifications` | Activity inbox |
 | PATCH | `/notifications/:id/read` | Mark notification read |
+| PATCH | `/notifications/read-all` | Mark the current user's notification inbox read |
 
 Booking updates enforce a server-side lifecycle (`REQUESTED` → `CONFIRMED`/`RESCHEDULED`/`CANCELLED`, then completion or no-show from an active visit). Requesters may only reschedule or cancel; hosts control confirmation and closure.
 | GET/POST | `/offers` | List/create offers |
@@ -60,6 +61,7 @@ Booking updates enforce a server-side lifecycle (`REQUESTED` → `CONFIRMED`/`RE
 | GET/POST | `/leads` | Agent/builder CRM |
 | PATCH | `/leads/:id` | Move lead and add note |
 | GET/POST | `/leases` | Property-management leases |
+| PATCH | `/leases/:id` | Advance a lease through its validated lifecycle |
 | GET/POST | `/maintenance` | Maintenance queue |
 | PATCH | `/maintenance/:id` | Assign/update ticket |
 | GET | `/dashboard/summary` | Role-scoped live metrics |

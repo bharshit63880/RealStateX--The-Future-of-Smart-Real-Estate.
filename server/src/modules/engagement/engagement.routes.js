@@ -8,5 +8,5 @@ const router=Router(); router.use(authenticate);
 router.get('/bookings',asyncHandler(controller.listBookings)); router.post('/bookings',validate(bookingSchema),asyncHandler(controller.createBooking)); router.patch('/bookings/:id',validate(bookingStatusSchema),asyncHandler(controller.updateBooking));
 router.get('/conversations',asyncHandler(controller.listConversations)); router.post('/conversations',validate(conversationSchema),asyncHandler(controller.createConversation)); router.post('/conversations/:id/messages',validate(messageSchema),asyncHandler(controller.addMessage));
 router.patch('/conversations/:id/read',validate(identifierSchema),asyncHandler(controller.readConversation));
-router.get('/notifications',asyncHandler(controller.notifications)); router.patch('/notifications/:id/read',validate(identifierSchema),asyncHandler(controller.readNotification));
+router.get('/notifications',asyncHandler(controller.notifications)); router.patch('/notifications/read-all',asyncHandler(controller.readAllNotifications)); router.patch('/notifications/:id/read',validate(identifierSchema),asyncHandler(controller.readNotification));
 export default router;
