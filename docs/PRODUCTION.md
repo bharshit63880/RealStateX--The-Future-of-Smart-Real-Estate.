@@ -23,7 +23,8 @@ Copy `.env.example` to `.env`, replace every secret and run `docker compose up -
 ## Operational controls
 
 - Refresh tokens are hashed and rotated; reuse revokes the entire token family.
-- Access tokens are short-lived and held in browser memory.
+- Access tokens are short-lived, held in browser memory, and checked against active account state plus a revocable security version.
+- Password changes and “sign out all devices” immediately revoke refresh sessions and already-issued access tokens.
 - Admin, moderation and transaction mutations emit audit records.
 - Global and stricter authentication rate limits, Helmet, strict CORS, signed HttpOnly cookies and body limits are enabled.
 - Document uploads enforce authentication, ownership/manager scope, 25 MB limits, allowed MIME/signature checks, SHA-256 checksums and audited downloads. Back `DOCUMENT_STORAGE_PATH` with encrypted persistent storage and malware scanning in production.

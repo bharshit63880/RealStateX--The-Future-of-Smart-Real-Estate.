@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
   failedLoginAttempts: { type: Number, default: 0, select: false },
   lockedUntil: { type: Date, default: null, select: false },
   lastLoginAt: { type: Date, default: null },
+  securityVersion: { type: Number, default: 0, min: 0, select: false },
 }, { timestamps: true, optimisticConcurrency: true });
 
-userSchema.set('toJSON', { transform: (_document, value) => { value.id = value._id.toString(); delete value._id; delete value.__v; delete value.passwordHash; delete value.failedLoginAttempts; delete value.lockedUntil; return value; } });
+userSchema.set('toJSON', { transform: (_document, value) => { value.id = value._id.toString(); delete value._id; delete value.__v; delete value.passwordHash; delete value.failedLoginAttempts; delete value.lockedUntil; delete value.securityVersion; return value; } });
 export const User = mongoose.model('User', userSchema);

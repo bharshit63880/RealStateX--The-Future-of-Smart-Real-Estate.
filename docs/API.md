@@ -17,7 +17,9 @@ Base URL: `/api/v1`. JSON responses use `{ success, message, data, error, meta, 
 | POST | `/auth/login` | Create access and refresh session |
 | POST | `/auth/refresh` | Rotate refresh token family |
 | POST | `/auth/logout` | Revoke current refresh session |
+| POST | `/auth/logout-all` | Revoke every refresh and access session for the account |
 | GET | `/auth/me` | Current profile |
+| PATCH | `/auth/password` | Verify current password, replace it and revoke every session |
 
 ## Marketplace
 
